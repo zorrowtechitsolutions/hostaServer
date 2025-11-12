@@ -985,7 +985,7 @@ export const getSingleHospital = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const search = (req.query.search as string) || "";
+    const search = (req.params.search as string) || "";
 
     const findHospital = await Hospital.find({
       $or: [
