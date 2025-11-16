@@ -2392,8 +2392,6 @@ import { Expo } from "expo-server-sdk";
 import { getIO } from "../../sockets/socket";
     import admin from "firebase-admin";
 
-// Initialize Firebase Admin
-import serviceAccount from '../../Config/serviceAccountKey.json'
 
 const twilio = require("twilio");
 require("dotenv").config();
