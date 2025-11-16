@@ -1,9 +1,241 @@
+// import { Request, Response } from "express";
+// import BloodDonor from "../../Model/BloodDonarSchema";
+// import createError from "http-errors";
+// import User from "../../Model/UserSchema";
+
+// // ✅ Create a Donor
+// export const createDonor = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   try {
+//     const {
+//       phone,
+//       dateOfBirth,
+//       bloodGroup,
+//       address,
+//       userId,
+//     } = req.body;
+
+//     // Check if donor already exists by email
+//     const exists = await BloodDonor.findOne({ phone });
+//     if (exists) {
+//       throw new createError.Conflict("Phone already exists");
+//     }
+
+//     // Validate phone number - remove starting 0 if needed
+//     const cleanedPhone = phone.startsWith("0") ? phone.slice(1) : phone;
+//     if (!/^\d{10}$/.test(cleanedPhone)) {
+//       throw new createError.BadRequest(
+//         "Phone number must be exactly 10 digits"
+//       );
+//     }
+
+//     const existingUser = await User.findById(userId);
+//     if (!existingUser) {
+//       throw new createError.NotFound("User not found");
+//     }
+
+ 
+//     const existingDonor = await BloodDonor.findOne({ userId });
+//     if (existingDonor) {
+//       throw new createError.BadRequest("Donor already created");
+//     }
+
+//     const donor = new BloodDonor({
+//       phone: cleanedPhone,
+//       dateOfBirth,
+//       bloodGroup,
+//       address,
+//       userId,
+//     });
+
+//     await donor.save();
+
+//     return res.status(201).json({
+//       message: "Donor created successfully",
+//       donor,
+//       status: 201,
+//     });
+//   } catch (error: any) {
+//     if (error.code === 11000) {
+//       // MongoDB duplicate key error
+//       return res
+//         .status(409)
+//         .json({ message: "Email or phone already exists", status: 409 });
+//     }
+
+//     // Other errors
+//     const statusCode = error.status || 500;
+//     const message = error.message || "Internal Server Error";
+//     return res.status(statusCode).json({ message, status: statusCode });
+//   }
+// };
+
+// // 🔍 Get All Donors (with pagination & search)
+// export const getDonors = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   const { search = "", bloodGroup, pincode, place } = req.query;
+
+//   const query: any = {
+//     $or: [
+//       { name: { $regex: search, $options: "i" } },
+//       { email: { $regex: search, $options: "i" } },
+//       { bloodGroup: { $regex: search, $options: "i" } },
+//       { "address.place": { $regex: search, $options: "i" } },
+//     ],
+//   };
+
+//   if (bloodGroup) query.bloodGroup = bloodGroup;
+//   if (pincode) query["address.pincode"] = pincode;
+//   if (place) query["address.place"] = place;
+
+//   const donors = await BloodDonor.find(query)
+//     .populate("userId")
+//     .sort({ createdAt: -1 });
+
+//   return res.status(200).json({ donors, total: donors.length });
+// };
+
+// // 📄 Get Single Donor
+// export const getSingleDonor = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   const { id } = req.params;
+
+//   if (!id) throw new createError.BadRequest("Invalid donor ID");
+
+//   const donor = await BloodDonor.findById(id).populate("userId");
+//   if (!donor) throw new createError.NotFound("Donor not found");
+
+//   return res.status(200).json(donor);
+// };
+
+// // 📄 Get  Donor id
+// export const getDonorId = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   const { id } = req.params;
+
+//   if (!id) throw new createError.BadRequest("Invalid donor ID");
+
+//   const donor = await BloodDonor.findOne({ userId: id });
+//   if (!donor) throw new createError.NotFound("Donor not found");
+
+//   return res.status(200).json(donor);
+// };
+
+// // 📝 Update Donor
+// export const updateDonor = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   const { id } = req.params;
+//   const updateData = req.body;
+
+//   if (!id) throw new createError.BadRequest("Invalid donor ID");
+
+//   const donor = await BloodDonor.findByIdAndUpdate(id, updateData, {
+//     new: true,
+//   });
+//   if (!donor) throw new createError.NotFound("Donor not found");
+
+//   return res.status(200).json({ message: "Donor updated", donor });
+// };
+
+// // ❌ Delete Donor
+// export const deleteDonor = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   const { id } = req.params;
+
+//   if (!id) throw new createError.BadRequest("Invalid donor ID");
+
+//   const donor = await BloodDonor.findByIdAndDelete(id);
+//   if (!donor) throw new createError.NotFound("Donor not found");
+
+//   return res.status(200).json({ message: "Donor deleted successfully" });
+// };
+
+
+
 import { Request, Response } from "express";
 import BloodDonor from "../../Model/BloodDonarSchema";
 import createError from "http-errors";
 import User from "../../Model/UserSchema";
 
 // ✅ Create a Donor
+// export const createDonor = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   try {
+//     const {
+//       phone,
+//       dateOfBirth,
+//       bloodGroup,
+//       address,
+//       userId,
+//     } = req.body;
+
+//     // Check if donor already exists by email
+//     const exists = await BloodDonor.findOne({ phone });
+//     if (exists) {
+//      return res.status(404).json({ message:  "Phone already exists" });
+//     }
+
+//     // Validate phone number - remove starting 0 if needed
+//     const cleanedPhone = phone.startsWith("0") ? phone.slice(1) : phone;
+//     if (!/^\d{10}$/.test(cleanedPhone)) {
+//       return res.status(404).json({ message:  "Phone number must be exactly 10 digits" });
+//     }
+
+//     const existingUser = await User.findById(userId);
+//     if (!existingUser) {
+//            return res.status(404).json({ message:  "User not found" });
+//     }
+
+ 
+//     const existingDonor = await BloodDonor.findOne({ userId });
+//     if (existingDonor) {
+//       return res.status(404).json({ message:  "Donor already created" });
+//     }
+
+//     const donor = new BloodDonor({
+//       phone: cleanedPhone,
+//       dateOfBirth,
+//       bloodGroup,
+//       address,
+//       userId,
+//     });
+
+//     await donor.save();
+
+//     return res.status(201).json({
+//       message: "Donor created successfully",
+//       donor,
+//       status: 201,
+//     });
+//   } catch (error: any) {
+//     if (error.code === 11000) {
+//       // MongoDB duplicate key error
+//       return res
+//         .status(409)
+//         .json({ message: "Email or phone already exists", status: 409 });
+//     }
+
+//     // Other errors
+//     const statusCode = error.status || 500;
+//     const message = error.message || "Internal Server Error";
+//     return res.status(statusCode).json({ message, status: statusCode });
+//   }
+// };
+
 export const createDonor = async (
   req: Request,
   res: Response
@@ -17,29 +249,45 @@ export const createDonor = async (
       userId,
     } = req.body;
 
-    // Check if donor already exists by email
+    // Check if donor already exists by phone
     const exists = await BloodDonor.findOne({ phone });
     if (exists) {
-      throw new createError.Conflict("Phone already exists");
+      return res.status(404).json({ message: "Phone already exists" });
     }
 
-    // Validate phone number - remove starting 0 if needed
+    // Validate phone number
     const cleanedPhone = phone.startsWith("0") ? phone.slice(1) : phone;
     if (!/^\d{10}$/.test(cleanedPhone)) {
-      throw new createError.BadRequest(
-        "Phone number must be exactly 10 digits"
-      );
+      return res.status(404).json({ message: "Phone number must be exactly 10 digits" });
     }
 
     const existingUser = await User.findById(userId);
     if (!existingUser) {
-      throw new createError.NotFound("User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
- 
     const existingDonor = await BloodDonor.findOne({ userId });
     if (existingDonor) {
-      throw new createError.BadRequest("Donor already created");
+      return res.status(404).json({ message: "Donor already created" });
+    }
+
+    // ✅ AGE VALIDATION (must be 18+)
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    const dayDiff = today.getDate() - dob.getDate();
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    if (age < 18) {
+      return res.status(400).json({
+        message: "You must be at least 18 years old to donate blood",
+        status: 400,
+      });
     }
 
     const donor = new BloodDonor({
@@ -57,20 +305,20 @@ export const createDonor = async (
       donor,
       status: 201,
     });
+
   } catch (error: any) {
     if (error.code === 11000) {
-      // MongoDB duplicate key error
       return res
         .status(409)
         .json({ message: "Email or phone already exists", status: 409 });
     }
 
-    // Other errors
     const statusCode = error.status || 500;
     const message = error.message || "Internal Server Error";
     return res.status(statusCode).json({ message, status: statusCode });
   }
 };
+
 
 // 🔍 Get All Donors (with pagination & search)
 export const getDonors = async (
